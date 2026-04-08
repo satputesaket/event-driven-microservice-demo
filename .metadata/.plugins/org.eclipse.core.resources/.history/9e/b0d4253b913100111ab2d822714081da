@@ -1,0 +1,5 @@
+package com.ezbuyshop.product.controller;
+
+public class ProductController {
+
+}
