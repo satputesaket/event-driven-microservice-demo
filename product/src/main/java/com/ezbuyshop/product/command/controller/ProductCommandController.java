@@ -1,4 +1,4 @@
-package com.ezbuyshop.product.controller;
+package com.ezbuyshop.product.command.controller;
 
 import java.util.UUID;
 
@@ -18,7 +18,7 @@ import com.ezbuyshop.product.dto.CreateProductModel;
 
 @RestController
 //@RequestMapping("/api/v1")
-public class ProductController {
+public class ProductCommandController {
 	
 	@Autowired
 	Environment env;
