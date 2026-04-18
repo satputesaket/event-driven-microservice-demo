@@ -2,6 +2,9 @@ package com.ezbuyshop.product.dto;
 
 import java.math.BigDecimal;
 
+import lombok.Data;
+
+@Data
 public class ProductModel {
 	
 	private String productId;

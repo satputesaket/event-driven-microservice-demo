@@ -13,7 +13,7 @@ import com.ezbuyshop.product.dto.ProductModel;
 import com.ezbuyshop.product.query.FindProductQuery;
 
 @RestController
-@RequestMapping("/product")
+@RequestMapping("/products")
 public class ProductQueryController {
 
 	@Autowired
