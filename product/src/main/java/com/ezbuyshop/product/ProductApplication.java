@@ -22,5 +22,7 @@ public class ProductApplication {
 		commandBus.registerDispatchInterceptor(context.getBean(CreateProductCommandInterceptor.class));
 
 	}
+	
+	
 
 }

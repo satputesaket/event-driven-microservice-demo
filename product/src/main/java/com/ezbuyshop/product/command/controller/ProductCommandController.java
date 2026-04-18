@@ -37,21 +37,18 @@ public class ProductCommandController {
 	
 	
 	@PostMapping()
-	public String createProducts(@RequestBody CreateProductModel createProductModel) {
+	public String createProducts(@RequestBody CreateProductModel createProductModel) throws Exception{
 		
 
 		
-		CreateProductCommand createProductCommand =CreateProductCommand.builder()
+		CreateProductCommand createProductCommand = CreateProductCommand.builder()
 		.title(createProductModel.getTitle())
 		.price(createProductModel.getPrice())
 		.quantity(createProductModel.getQuantity())
 		.productId(UUID.randomUUID().toString()).build();
 		String returnString;
-		try{
-			returnString = commandGateway.sendAndWait(createProductCommand);
-		}catch(Exception ex) {
-			returnString = ex.getLocalizedMessage();
-		}
+		returnString = commandGateway.sendAndWait(createProductCommand);
+		
 		return returnString;
 	}
 	
