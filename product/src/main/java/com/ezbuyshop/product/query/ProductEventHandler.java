@@ -25,18 +25,10 @@ public class ProductEventHandler {
 
 		ProductEntity productEntity = new ProductEntity();
 		BeanUtils.copyProperties(productCreatedEvent, productEntity);
-//		
-//		try {
-//			productRepository.save(productEntity);
-//		} catch (IllegalArgumentException ex) {
-//			ex.printStackTrace();
-//		}
+
 		
-		try {
-		    productRepository.save(productEntity);
-		} catch (Exception ex) {
-		    System.out.println("Duplicate or DB issue - ignoring");
-		}
+		productRepository.save(productEntity);
+
 
 	}
 	

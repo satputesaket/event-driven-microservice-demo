@@ -24,12 +24,9 @@ public class ProductLookUpEventHandler {
 
 		ProductLookUpEntity productLookUpEntity = new ProductLookUpEntity(productCreatedEvent.getProductId(),
 				productCreatedEvent.getTitle());
-	try {		
+
 		productLookUpRepository.save(productLookUpEntity);
 		
-    } catch (Exception e) {
-        System.out.println("Duplicate title ignored");
-    }
 
 
 	}
