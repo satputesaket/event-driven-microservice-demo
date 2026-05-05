@@ -1,0 +1,10 @@
+package com.ezbuyshop.orders.query;
+
+import lombok.Value;
+
+@Value
+public class FindOrderQuery {
+
+	private final String orderId;
+	
+}
