@@ -23,6 +23,9 @@ public class OrderEventsHandler {
 
     @EventHandler
     public void on(OrderCreatedEvent event) throws Exception {
+    	
+
+    	
         OrderEntity orderEntity = new OrderEntity();
         BeanUtils.copyProperties(event, orderEntity);
  

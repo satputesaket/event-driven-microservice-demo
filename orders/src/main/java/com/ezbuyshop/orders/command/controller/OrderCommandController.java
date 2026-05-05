@@ -56,7 +56,8 @@ public class OrderCommandController {
 
 		try {
 			commandGateway.sendAndWait(createOrderCommand);
-			return queryResult.updates().blockFirst();
+//			return queryResult.updates().blockFirst();
+			return queryResult.initialResult().block();
 		} finally {
 			queryResult.close();
 		}
