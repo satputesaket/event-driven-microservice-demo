@@ -9,6 +9,8 @@ import org.axonframework.modelling.command.AggregateLifecycle;
 import org.axonframework.spring.stereotype.Aggregate;
 import org.springframework.beans.BeanUtils;
 
+import com.ezbuyshop.core.commands.ReserveProductCommand;
+import com.ezbuyshop.core.events.ProductReservedEvent;
 import com.ezbuyshop.product.command.CreateProductCommand;
 import com.ezbuyshop.product.command.event.ProductCreatedEvent;
 
@@ -43,6 +45,22 @@ public class ProductAggregate {
 
 		AggregateLifecycle.apply(productCreatedEvent);
 	}
+	
+	@CommandHandler
+	public void handle(ReserveProductCommand reserveProductCommand) {
+		if(quantity<reserveProductCommand.getQuantity()) {
+			throw new IllegalArgumentException("Insufficient number of items in stock");
+		}
+		
+		ProductReservedEvent productReservedEvent = ProductReservedEvent.builder()
+				.orderId(reserveProductCommand.getOrderId())
+				.productId(reserveProductCommand.getProductId())
+				.quantity(reserveProductCommand.getQuantity())
+				.userId(reserveProductCommand.getUserId())
+				.build();
+		
+		AggregateLifecycle.apply(productReservedEvent);
+	}
 
 	@EventSourcingHandler
 	public void on(ProductCreatedEvent productCreatedEvent) {
@@ -52,4 +70,11 @@ public class ProductAggregate {
 		this.quantity = productCreatedEvent.getQuantity();
 	}
 
+	@EventSourcingHandler
+	public void on(ProductReservedEvent productReservedEvent) {
+
+		this.quantity -= productReservedEvent.getQuantity();
+		
+	}
+	
 }
