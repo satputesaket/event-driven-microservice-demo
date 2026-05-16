@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 import com.ezbuyshop.product.data.ProductEntity;
 import com.ezbuyshop.product.data.ProductRepository;
 import com.ezbuyshop.product.dto.ProductModel;
+import com.ezbuyshop.product.dto.ProductRestModel;
 
 
 @Component
@@ -24,7 +25,7 @@ public class ProductQueryHandler {
 	}
 	
 	@QueryHandler
-	public List<ProductModel> findProducts(FindProductQuery findProductQuery) {
+	public ProductRestModel findProducts(FindProductQuery findProductQuery) {
 		
 
 		    List<ProductModel> productsRest = new ArrayList<>();
@@ -32,12 +33,21 @@ public class ProductQueryHandler {
 		    List<ProductEntity> storedProducts = productRepository.findAll();
 
 		    for (ProductEntity productEntity : storedProducts) {
-		    	ProductModel productRestModel = new ProductModel();
-		        BeanUtils.copyProperties(productEntity, productRestModel);
-		        productsRest.add(productRestModel);
+//		    	ProductModel productRestModel = new ProductModel();
+//		        BeanUtils.copyProperties(productEntity, productRestModel);
+//		        productsRest.add(productRestModel);
+		    	
+		    	productsRest.add(
+		    		    new ProductModel(
+		    		        productEntity.getProductId(),
+		    		        productEntity.getTitle(),
+		    		        productEntity.getPrice(),
+		    		        productEntity.getQuantity()
+		    		    ));
+
 		    }
 
-		    return productsRest;
+		    return new ProductRestModel(productsRest);
 		}
 	
 }

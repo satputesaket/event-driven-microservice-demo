@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.ezbuyshop.product.dto.ProductModel;
+import com.ezbuyshop.product.dto.ProductRestModel;
 import com.ezbuyshop.product.query.FindProductQuery;
 
 @RestController
@@ -20,10 +21,15 @@ public class ProductQueryController {
 	QueryGateway queryGateway;
 
 	@GetMapping
-	public List<ProductModel> getProducts() {
-		FindProductQuery findProductQuery = new FindProductQuery();
-		List<ProductModel> products = queryGateway
-				.query(findProductQuery, ResponseTypes.multipleInstancesOf(ProductModel.class)).join();
+	public ProductRestModel getProducts() {
+		FindProductQuery findProductQuery = new FindProductQuery(null);
+	    ProductRestModel products =
+	            queryGateway.query(
+	                    findProductQuery,
+	                    ResponseTypes.instanceOf(ProductRestModel.class)
+	            ).join();
+
+		
 		return products;
 	}
 
