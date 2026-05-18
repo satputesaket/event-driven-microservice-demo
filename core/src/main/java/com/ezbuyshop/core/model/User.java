@@ -1,13 +1,18 @@
 package com.ezbuyshop.core.model;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
+
 public class User {
-    private final String firstName;
-    private final String lastName;
-    private final String userId;
-    private final PaymentDetails paymentDetails;
+    private  String firstName;
+    private  String lastName;
+    private  String userId;
+    private  PaymentDetails paymentDetails;
 }

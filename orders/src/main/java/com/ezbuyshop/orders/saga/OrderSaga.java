@@ -5,8 +5,10 @@ import org.axonframework.commandhandling.CommandCallback;
 import org.axonframework.commandhandling.CommandMessage;
 import org.axonframework.commandhandling.CommandResultMessage;
 import org.axonframework.commandhandling.gateway.CommandGateway;
+import org.axonframework.messaging.responsetypes.ResponseTypes;
 import org.axonframework.modelling.saga.SagaEventHandler;
 import org.axonframework.modelling.saga.StartSaga;
+import org.axonframework.queryhandling.QueryGateway;
 import org.axonframework.spring.stereotype.Saga;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,6 +16,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.ezbuyshop.core.commands.ReserveProductCommand;
 import com.ezbuyshop.core.events.ProductReservedEvent;
+import com.ezbuyshop.core.model.User;
+import com.ezbuyshop.core.query.FetchUserPaymentDetailsQuery;
 import com.ezbuyshop.orders.core.events.OrderCreatedEvent;
 
 @Saga
@@ -22,6 +26,10 @@ public class OrderSaga {
 	//because saga is serialized we are marking command gateway as transient
 	@Autowired
 	private transient CommandGateway commandGateway;
+	
+	@Autowired
+	private transient QueryGateway queryGateway;
+
 	
 	private static final Logger LOGGER = LoggerFactory.getLogger(OrderSaga.class);
 	
@@ -61,6 +69,29 @@ public class OrderSaga {
 			    + productReservedEvent.getOrderId());
 		
 		// process user payment
+		
+		FetchUserPaymentDetailsQuery fetchUserPaymentDetailsQuery = 
+				new FetchUserPaymentDetailsQuery(productReservedEvent.getUserId());
+		
+		User userPaymentDetails = null;
+		
+		try {
+		userPaymentDetails = queryGateway.query(fetchUserPaymentDetailsQuery, 
+				ResponseTypes.instanceOf(User.class)).join();
+		
+		}catch(Exception ex) {
+			LOGGER.error(ex.getMessage());
+			// start compensating transaction
+			return;
+		}
+		
+		if(userPaymentDetails ==null) {
+			// start compensating transaction
+			return;
+		}
+		LOGGER.info("Successfully fetched user payment details for user " + userPaymentDetails.getFirstName());;
+		
+		
 		
 	}
 }

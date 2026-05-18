@@ -1,15 +1,20 @@
 package com.ezbuyshop.core.model;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
+
 public class PaymentDetails {
-    private final String name;
-    private final String cardNumber;
-    private final int validUntilMonth;
-    private final int validUntilYear;
-    private final String cvv;
+    private  String name;
+    private  String cardNumber;
+    private  int validUntilMonth;
+    private  int validUntilYear;
+    private  String cvv;
     
 }
