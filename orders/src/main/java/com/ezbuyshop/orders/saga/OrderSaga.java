@@ -1,11 +1,14 @@
 package com.ezbuyshop.orders.saga;
 
 
+import java.util.UUID;
+
 import org.axonframework.commandhandling.CommandCallback;
 import org.axonframework.commandhandling.CommandMessage;
 import org.axonframework.commandhandling.CommandResultMessage;
 import org.axonframework.commandhandling.gateway.CommandGateway;
 import org.axonframework.messaging.responsetypes.ResponseTypes;
+import org.axonframework.modelling.saga.EndSaga;
 import org.axonframework.modelling.saga.SagaEventHandler;
 import org.axonframework.modelling.saga.StartSaga;
 import org.axonframework.queryhandling.QueryGateway;
@@ -14,10 +17,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.ezbuyshop.core.commands.ProcessPaymentCommand;
 import com.ezbuyshop.core.commands.ReserveProductCommand;
+import com.ezbuyshop.core.events.PaymentProcessedEvent;
 import com.ezbuyshop.core.events.ProductReservedEvent;
 import com.ezbuyshop.core.model.User;
 import com.ezbuyshop.core.query.FetchUserPaymentDetailsQuery;
+import com.ezbuyshop.orders.command.commands.ApproveOrderCommand;
+import com.ezbuyshop.orders.core.events.OrderApprovedEvent;
 import com.ezbuyshop.orders.core.events.OrderCreatedEvent;
 
 @Saga
@@ -90,8 +97,32 @@ public class OrderSaga {
 			return;
 		}
 		LOGGER.info("Successfully fetched user payment details for user " + userPaymentDetails.getFirstName());;
-		
-		
+        ProcessPaymentCommand proccessPaymentCommand = ProcessPaymentCommand.builder()
+        		.orderId(productReservedEvent.getOrderId())
+        		.paymentDetails(userPaymentDetails.getPaymentDetails())
+        		.paymentId(UUID.randomUUID().toString())
+        		.build();
+
+        commandGateway.send(proccessPaymentCommand);
 		
 	}
+	
+	@SagaEventHandler(associationProperty="orderId")
+	public void handle(PaymentProcessedEvent paymentProcessedEvent) {
+		
+		ApproveOrderCommand approveOrderCommand 
+				= new ApproveOrderCommand(paymentProcessedEvent.getOrderId());
+		
+		commandGateway.send(approveOrderCommand);
+		
+	}
+	
+	@EndSaga
+	@SagaEventHandler(associationProperty="orderId")
+	public void handle(OrderApprovedEvent orderApprovedEvent) {
+		LOGGER.info("Order has been Approved " + orderApprovedEvent.getOrderId());;
+
+	}
+	
+	
 }
