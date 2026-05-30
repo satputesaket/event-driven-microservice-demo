@@ -55,9 +55,9 @@ public class OrderCommandController {
 				ResponseTypes.instanceOf(OrderSummary.class));
 
 		try {
-			commandGateway.sendAndWait(createOrderCommand);
-//			return queryResult.updates().blockFirst();
-			return queryResult.initialResult().block();
+//			return commandGateway.sendAndWait(createOrderCommand);
+			return queryResult.updates().blockFirst();
+			//return queryResult.initialResult().block();
 		} finally {
 			queryResult.close();
 		}

@@ -17,6 +17,7 @@ import org.axonframework.modelling.saga.EndSaga;
 import org.axonframework.modelling.saga.SagaEventHandler;
 import org.axonframework.modelling.saga.StartSaga;
 import org.axonframework.queryhandling.QueryGateway;
+import org.axonframework.queryhandling.QueryUpdateEmitter;
 import org.axonframework.spring.stereotype.Saga;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,6 +36,8 @@ import com.ezbuyshop.orders.command.commands.RejectOrderCommand;
 import com.ezbuyshop.orders.core.events.OrderApprovedEvent;
 import com.ezbuyshop.orders.core.events.OrderCreatedEvent;
 import com.ezbuyshop.orders.core.events.OrderRejectedEvent;
+import com.ezbuyshop.orders.query.FindOrderQuery;
+import com.ezbuyshop.orders.core.model.OrderSummary;
 
 @Saga
 public class OrderSaga {
@@ -55,6 +58,10 @@ public class OrderSaga {
 	private final String PAYMENT_PROCESSING_TIMEOUT_DEADLINE="payment-processing-deadline";
 	
 	private String scheduleId;
+	
+	@Autowired
+	private transient QueryUpdateEmitter queryUpdateEmitter;
+
 
 	
 	
@@ -196,7 +203,11 @@ public class OrderSaga {
 	@SagaEventHandler(associationProperty="orderId")
 	public void handle(OrderRejectedEvent orderRejectedEvent) {
 		LOGGER.info("Successfully rejected order with id " + orderRejectedEvent.getOrderId());
-		
+		queryUpdateEmitter.emit(FindOrderQuery.class, query -> true, 
+				new OrderSummary(orderRejectedEvent.getOrderId(), 
+						orderRejectedEvent.getOrderStatus(),
+						orderRejectedEvent.getReason()));
+
 	}
 
 	
@@ -205,6 +216,11 @@ public class OrderSaga {
 	@SagaEventHandler(associationProperty="orderId")
 	public void handle(OrderApprovedEvent orderApprovedEvent) {
 		LOGGER.info("Order has been Approved " + orderApprovedEvent.getOrderId());;
+		queryUpdateEmitter.emit(FindOrderQuery.class, query -> true, 
+				new OrderSummary(orderApprovedEvent.getOrderId(), 
+						orderApprovedEvent.getOrderStatus(),
+						""));
+
 
 	}
 	
@@ -212,6 +228,7 @@ public class OrderSaga {
 	public void handlePaymentDeadline(ProductReservedEvent productReservedEvent) {
 		LOGGER.info("Payment processing deadline took place. Sending a compensating command to cancel the product reservation");
 		cancelProductReservation(productReservedEvent, "Payment timeout");
+		
 	}
 
 	
