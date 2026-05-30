@@ -9,7 +9,9 @@ import org.axonframework.modelling.command.AggregateLifecycle;
 import org.axonframework.spring.stereotype.Aggregate;
 import org.springframework.beans.BeanUtils;
 
+import com.ezbuyshop.core.commands.CancelProductReservedCommand;
 import com.ezbuyshop.core.commands.ReserveProductCommand;
+import com.ezbuyshop.core.events.ProductReservationCancelEvent;
 import com.ezbuyshop.core.events.ProductReservedEvent;
 import com.ezbuyshop.product.command.CreateProductCommand;
 import com.ezbuyshop.product.command.event.ProductCreatedEvent;
@@ -76,5 +78,29 @@ public class ProductAggregate {
 		this.quantity -= productReservedEvent.getQuantity();
 		
 	}
+	
+	
+	@CommandHandler
+	public void on(CancelProductReservedCommand cancelProductReservedCommand) {
+		
+		ProductReservationCancelEvent productReservationCancelEvent = ProductReservationCancelEvent.builder()
+				.orderId(cancelProductReservedCommand.getOrderId())
+				.userId(cancelProductReservedCommand.getUserId())
+				.reason(cancelProductReservedCommand.getReason())
+				.quantity(cancelProductReservedCommand.getQuantity())
+				.productId(cancelProductReservedCommand.getProductId())
+				.build();
+		
+		AggregateLifecycle.apply(productReservationCancelEvent);
+		
+	}
+	
+	@EventSourcingHandler
+	public void on(ProductReservationCancelEvent productReservationCancelEvent) {
+
+		this.quantity += productReservationCancelEvent.getQuantity();
+		
+	}
+	
 	
 }

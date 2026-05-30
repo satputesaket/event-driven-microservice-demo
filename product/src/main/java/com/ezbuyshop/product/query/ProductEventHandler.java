@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Component;
 
+import com.ezbuyshop.core.events.ProductReservationCancelEvent;
 import com.ezbuyshop.core.events.ProductReservedEvent;
 import com.ezbuyshop.product.command.event.ProductCreatedEvent;
 import com.ezbuyshop.product.data.ProductEntity;
@@ -42,6 +43,17 @@ public class ProductEventHandler {
 			    + productReservedEvent.getProductId() 
 			    + " and orderId: " 
 			    + productReservedEvent.getOrderId());
+		
+	}
+	
+	@EventHandler
+	public void on(ProductReservationCancelEvent productReservationCancelEvent) {
+		
+		ProductEntity productEntity = productRepository.findByProductId(productReservationCancelEvent.getProductId());
+		int newProductQuantity= productEntity.getQuantity() + productReservationCancelEvent.getQuantity();
+		productEntity.setQuantity(newProductQuantity);
+		productRepository.save(productEntity);
+		
 		
 	}
 
