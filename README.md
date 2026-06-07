@@ -1,4 +1,4 @@
-# Event-Driven Microservices with Spring Boot, Axon & Saga Pattern
+# EZBUYSTORE : Event-Driven Microservices with Spring Boot, Axon & Saga Pattern
 
 A distributed microservices system built using **Spring Boot**, **Spring Cloud**, and **Axon Framework** demonstrating:
 
